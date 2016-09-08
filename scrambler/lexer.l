@@ -1,10 +1,11 @@
-/* -*- fundamental -*-                                                        
- *                                                                            
+/* -*- fundamental -*-
+ *
  * Flex-based lexical scanner for the SMT-LIB v2 command language
- *                                                                            
+ *
  * Author: Alberto Griggio <griggio@fbk.eu>
- *                                                                            
- * Copyright (C) 2010 Alberto Griggio
+ * Author: Tjark Weber <tjark.weber@it.uu.se>
+ *
+ * Copyright (C) 2011 Alberto Griggio
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -24,22 +25,21 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
-  
+
 %{
 
-#include "smtlib2parserinterface.h"
-#include "smtlib2bisonparser.h"
-#include "smtlib2utils.h"
+#include "scrambler.h"
+#include <iostream>
+#include <vector>
+#include "parser.h"
 
 
 #define YY_INPUT(buf,result,max_size) \
   { \
-    smtlib2_stream *src; \
     size_t howmany = 0; \
     char *which = buf; \
-    src = (smtlib2_stream *)smtlib2_parser_get_extra(yyscanner); \
-    int c; \
-    while (howmany < max_size && (c = src->get_char(src)) != EOF) { \
+    char c; \
+    while (howmany < max_size && std::cin.get(c)) { \
         *which = c; \
         ++which; \
         ++howmany; \
@@ -49,11 +49,7 @@
  }
 
 %}
-%option reentrant
-%option bison-bridge
-%option bison-locations
 %option noyywrap
-%option prefix="smtlib2_parser_"
 %option stack
 
 %x START_STRING
@@ -103,44 +99,46 @@ KEYWORD             :[a-zA-Z0-9._+\-*=%?!$_~&^<>@]+
 "get-model"      { return TK_GET_MODEL; }
 "get-value"      { return TK_GET_VALUE; }
 "exit"           { return TK_EXIT; }
-".internal-parse-terms" { return TK_INTERNAL_PARSE_TERMS; }
 
-{BINCONSTANT}  { yylval->string = smtlib2_strdup(yytext); return BINCONSTANT; }
-{HEXCONSTANT}  { yylval->string = smtlib2_strdup(yytext); return HEXCONSTANT; }
-{RATCONSTANT}  { yylval->string = smtlib2_strdup(yytext); return RATCONSTANT; }
-{BVCONSTANT}   { yylval->string = smtlib2_strdup(yytext); return BVCONSTANT; }
-{NUMERAL}      { yylval->string = smtlib2_strdup(yytext); return NUMERAL; }
-{SYMBOL}       { yylval->string = smtlib2_strdup(yytext); return SYMBOL; }
-{KEYWORD}      { yylval->string = smtlib2_strdup(yytext); return KEYWORD; }
+{BINCONSTANT}  { yylval.string = c_strdup(yytext); return BINCONSTANT; }
+{HEXCONSTANT}  { yylval.string = c_strdup(yytext); return HEXCONSTANT; }
+{RATCONSTANT}  { yylval.string = c_strdup(yytext); return RATCONSTANT; }
+{BVCONSTANT}   { yylval.string = c_strdup(yytext); return BVCONSTANT; }
+{NUMERAL}      { yylval.string = c_strdup(yytext); return NUMERAL; }
+{SYMBOL}       { yylval.string = c_strdup(yytext); return SYMBOL; }
+{KEYWORD}      { yylval.string = c_strdup(yytext); return KEYWORD; }
 
-\"              { yylval->buf = smtlib2_charbuf_new();
-                  yy_push_state(START_STRING, yyscanner); }
+\"              { yylval.buf = new std::vector<char>();
+                  BEGIN(START_STRING); }
 <START_STRING>{
-  \\\"          { smtlib2_charbuf_push(yylval->buf, '"'); }
-  [^\"\n]       { smtlib2_charbuf_push(yylval->buf, yytext[0]); }
-  \n            { smtlib2_charbuf_push(yylval->buf, '\n'); }
+  \"\"          { yylval.buf->push_back('"'); }
+  \\\"          { yylval.buf->push_back('"'); }
+  [^\"\n]       { yylval.buf->push_back(yytext[0]); }
+  \n            { yylval.buf->push_back('\n'); }
   \"            {
                   char *s;
-                  smtlib2_charbuf_push(yylval->buf, '\0');
-                  s = smtlib2_charbuf_array_release(yylval->buf);
-                  smtlib2_charbuf_delete(yylval->buf);
-                  yylval->buf = NULL;
-                  yylval->string = s;
-                  yy_pop_state(yyscanner); return STRING; }
+                  yylval.buf->push_back('\0');
+                  s = c_strdup(&(yylval.buf->front()));
+                  delete yylval.buf;
+                  yylval.buf = NULL;
+                  yylval.string = s;
+                  BEGIN(INITIAL); return STRING; }
 }
 
-\|              { yylval->buf = smtlib2_charbuf_new();
-                  yy_push_state(START_QUOTEDSYMBOL, yyscanner); }
+\|              { yylval.buf = new std::vector<char>();
+                  yylval.buf->push_back('|');
+                  BEGIN(START_QUOTEDSYMBOL); }
 <START_QUOTEDSYMBOL>{
-  [^|]        { smtlib2_charbuf_push(yylval->buf, yytext[0]); }
+  [^|]        { yylval.buf->push_back(yytext[0]); }
   \|          {
                 char *s;
-                smtlib2_charbuf_push(yylval->buf, '\0');
-                s = smtlib2_charbuf_array_release(yylval->buf);
-                smtlib2_charbuf_delete(yylval->buf);
-                yylval->buf = NULL;
-                yylval->string = s;
-                yy_pop_state(yyscanner); return SYMBOL; }
+                yylval.buf->push_back('|');
+                yylval.buf->push_back('\0');
+                s = c_strdup(&(yylval.buf->front()));
+                delete yylval.buf;
+                yylval.buf = NULL;
+                yylval.string = s;
+                BEGIN(INITIAL); return SYMBOL; }
 }
 
 %%
