@@ -79,14 +79,14 @@ using namespace scrambler;
 %token TK_EXISTS        "exists"
 
 %token TK_SET_LOGIC            "set-logic"
-%token TK_DECLARE_SORT         "declare-sort"
-%token TK_DEFINE_SORT          "define-sort"
-%token TK_DECLARE_FUN          "declare-fun"
+%token TK_DECLARE_SORT         "declare-sort" //
+%token TK_DEFINE_SORT          "define-sort" 
+%token TK_DECLARE_FUN          "declare-fun" //
 %token TK_DEFINE_FUN           "define-fun"
-%token TK_PUSH                 "push"
-%token TK_POP                  "pop"
-%token TK_ASSERT               "assert"
-%token TK_CHECK_SAT            "check-sat"
+%token TK_PUSH                 "push" //
+%token TK_POP                  "pop" //
+%token TK_ASSERT               "assert" //
+%token TK_CHECK_SAT            "check-sat" //
 %token TK_GET_ASSERTIONS       "get-assertions"
 %token TK_GET_UNSAT_CORE       "get-unsat-core"
 %token TK_GET_PROOF            "get-proof"
@@ -189,6 +189,7 @@ cmd_declare_sort : '(' TK_DECLARE_SORT SYMBOL NUMERAL ')'
       add_node("declare-sort", make_node($3), make_node($4));
       free($4);
       free($3);
+      ++counter_declare_sort;
   }
 ;
 
@@ -216,12 +217,14 @@ cmd_declare_fun :
       set_new_name($3);
       add_node("declare-fun", make_node($3), make_node(), $6);
       free($3);
+      ++counter_declare_fun;
   }
 | '(' TK_DECLARE_FUN SYMBOL '(' sort_list ')' a_sort ')'
   {
       set_new_name($3);
       add_node("declare-fun", make_node($3), make_node($5), $7);
       free($3);
+      ++counter_declare_fun;
   }
 ;
 
@@ -256,6 +259,7 @@ cmd_push : '(' TK_PUSH NUMERAL ')'
           push_namespace();
       }
       add_node("push", make_node($3));
+      ++counter_push;
       free($3);
   }
 ;
@@ -268,6 +272,7 @@ cmd_pop : '(' TK_POP NUMERAL ')'
           pop_namespace();
       }
       add_node("pop", make_node($3));
+      ++counter_pop;
       free($3);
   }
 ;
@@ -277,6 +282,7 @@ cmd_assert :
   '(' TK_ASSERT a_term ')'
   {
       add_node("assert", $3);
+      ++counter_assertions;
   }
 ;
 
@@ -284,6 +290,7 @@ cmd_assert :
 cmd_check_sat : '(' TK_CHECK_SAT ')'
   {
       add_node("check-sat");
+      ++ counter_check_sat;
   }
 ;
 
@@ -419,13 +426,14 @@ annotated_term :
 ;
 
 
-plain_term :
+plain_term :  //counters here<??
  '(' TK_LET '(' parallel_let_bindings ')' a_term ')'
   {
       shuffle_list($4);
       $$ = make_node("let", make_node($4), $6);
       delete $4;
       pop_namespace();
+      ++counter_let_bindings;
   }
 | '(' TK_FORALL '(' quant_var_list ')' a_term ')'
   {
@@ -434,6 +442,7 @@ plain_term :
       for (int i = 0; i < $4->size(); ++i) {
           pop_namespace();
       }
+      ++counter_forall;
       delete $4;
   }
 | '(' TK_EXISTS '(' quant_var_list ')' a_term ')'
@@ -443,6 +452,7 @@ plain_term :
       for (int i = 0; i < $4->size(); ++i) {
           pop_namespace();
       }
+      ++counter_exists;
       delete $4;
   }
 | term_num_constant
@@ -496,26 +506,31 @@ term_unqualified_symbol :
 ;
 
 
-term_num_constant :
+term_num_constant : //not sure if this is a place to count 
   NUMERAL
   {
       $$ = make_node($1);
       free($1);
+      //      ++counter_argument;
   }
 | RATCONSTANT
   {
       $$ = make_node($1);
       free($1);
+      //      ++counter_argument;
+    
   }
 | BINCONSTANT
   {
       $$ = make_node($1);
       free($1);
+      //      ++counter_argument;
   }
 | HEXCONSTANT
   {
       $$ = make_node($1);
       free($1);
+      //      ++counter_argument;
   }
 | '(' TK_UNDERSCORE BVCONSTANT NUMERAL ')'
   {

@@ -30,6 +30,35 @@
 #include <vector>
 #include <string>
 
+extern int counter_declare_fun;
+extern int counter_declare_sort;
+extern int counter_assertions;
+extern int counter_check_sat;
+extern int counter_argument;
+extern int counter_push;
+extern int counter_pop;
+extern int counter_let_bindings;
+extern int counter_forall;
+extern int counter_exists;
+/*
+extern int counter_core_true;
+extern int counter_core_false;
+extern int counter_core_not;
+extern int counter_core_imply;
+extern int counter_core_and;
+extern int counter_core_or;
+extern int counter_core_xor;
+
+extern int counter_bitvec_true;
+extern int counter_bitvec_false;
+extern int counter_bitvec_not;
+extern int counter_bitvec_imply;
+extern int counter_bitvec_and;
+extern int counter_bitvec_or;
+extern int counter_bitvec_xor;
+*/
+
+
 namespace scrambler {
 
 struct node {

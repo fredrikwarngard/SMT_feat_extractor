@@ -41,6 +41,78 @@
 #include <ctype.h>
 #include <stack>
 
+
+int counter_declare_fun  = 0;
+int counter_declare_sort = 0;
+int counter_check_sat    = 0;
+int counter_assertions   = 0;
+int counter_argument     = 0;
+int counter_push         = 0;
+int counter_pop          = 0;
+int counter_let_bindings = 0;
+int counter_forall       = 0;
+int counter_exists       = 0;
+
+//CORE OPERATION SYMBOL COUNTER
+int counter_core_true    = 0;
+int counter_core_false   = 0;
+int counter_core_not     = 0;
+int counter_core_imply   = 0;
+int counter_core_and     = 0;
+int counter_core_or      = 0;
+int counter_core_xor     = 0;
+
+
+
+
+
+int counter_bitvector_LE_GR   = 0;
+int counter_bitvector_LEQ_GEQ = 0;
+
+/*
+int counter_bitvector_     = 0;
+int counter_bitvector_     = 0;
+int counter_bitvector_     = 0;
+int counter_bitvector_     = 0;
+int counter_bitvector_     = 0;
+
+
+
+
+
+//BITVECTOR OPERATION COUNTERS
+        if (s == "<") {
+	  ++counter_bitvector_LE_GR;
+        } else if (s == ">") {
+	  ++counter_bitvector_LE_GR;
+        } else if (s == "<=") {
+	  ++counter_bitvector_LEQ_GEQ;
+        } else if (s == ">=") {
+	  ++counter_bitvector_LEQ_GEQ;
+
+
+        } else if (s == "bvslt") {
+            *out_n = make_node("bvsgt");
+        } else if (s == "bvsle") {
+            *out_n = make_node("bvsge");
+        } else if (s == "bvult") {
+            *out_n = make_node("bvugt");
+        } else if (s == "bvule") {
+            *out_n = make_node("bvuge");
+        } else if (s == "bvsgt") {
+            *out_n = make_node("bvslt");
+        } else if (s == "bvsge") {
+            *out_n = make_node("bvsle");
+        } else if (s == "bvugt") {
+            *out_n = make_node("bvult");
+        } else if (s == "bvuge") {
+            *out_n = make_node("bvule");
+            return true;
+        }
+
+*/
+
+
 namespace scrambler {
 
 namespace {
@@ -131,6 +203,7 @@ int name_idx = 1;
 void set_new_name(const char *n)
 {
     n = unquote(n);
+    //    std::cout << n << std::endl;
 
     if (shadow_undos.empty())
       {
@@ -213,6 +286,10 @@ void add_node(const char *s, node *n1, node *n2, node *n3, node *n4)
         ret->children.push_back(n4);
     }
 
+    //    if (ret->symbol.compare("xor") == 0)
+    //      ++counter_core_xor;
+
+      
     commands.push_back(ret);
 }
 
@@ -233,6 +310,22 @@ node *make_node(const char *s, node *n1, node *n2)
     if (!ret->symbol.empty() && ret->children.empty()) {
         ret->needs_parens = false;
     }
+    if (ret->symbol.compare("xor") == 0)
+      ++counter_core_xor;
+    if (ret->symbol.compare("and") == 0)
+      ++counter_core_and;
+    if (ret->symbol.compare("or") == 0)
+      ++counter_core_or;
+    if (ret->symbol.compare("not") == 0)
+      ++counter_core_not;
+    if (ret->symbol.compare("true") == 0)
+      ++counter_core_true;
+    if (ret->symbol.compare("false") == 0)
+      ++counter_core_false;
+    if (ret->symbol.compare("imply") == 0)
+      ++counter_core_imply;
+
+
     return ret;
 }
 
@@ -338,15 +431,19 @@ bool flip_antisymm(node *n, node **out_n)
     if (!logic_is_dl()) {
         if (s == "<") {
             *out_n = make_node(">");
+	    ++counter_bitvector_LE_GR;
             return true;
         } else if (s == ">") {
             *out_n = make_node("<");
+	    ++counter_bitvector_LE_GR;
             return true;
         } else if (s == "<=") {
             *out_n = make_node(">=");
+	    ++counter_bitvector_LEQ_GEQ;
             return true;
         } else if (s == ">=") {
             *out_n = make_node("<=");
+	    ++counter_bitvector_LEQ_GEQ;
             return true;
         } else if (s == "bvslt") {
             *out_n = make_node("bvsgt");
@@ -934,6 +1031,33 @@ int main(int argc, char **argv)
         print_unfolded(unfold_pattern, keep_annotations,
                        unfold_start, unfold_end);
     }
+    std::cout << "\nNumber of declare-fun :\t" << counter_declare_fun << std::endl;
+    std::cout << "Number of declare-sort :" << counter_declare_sort << std::endl;
+    std::cout << "Number of assertions :\t" << counter_assertions << std::endl;
+    std::cout << "Number of check-sat  :\t" << counter_check_sat << "\n" << std::endl;
+    std::cout << "Number of push :\t" << counter_push << std::endl;
+    std::cout << "Number of pop  :\t" << counter_pop << "\n"<< std::endl;
+    std::cout << "Number of LET bindings :" << counter_let_bindings << std::endl;
+    std::cout << "Number of arguments  :\t" << counter_argument << std::endl;
+    std::cout << "Number of FOR ALL  :\t" << counter_forall << std::endl;
+    std::cout << "Number of EXIST  :\t" << counter_exists << "\n" << std::endl;
 
+    std::cout << "Number of xors  :\t" << counter_core_xor << std::endl;
+    std::cout << "Number of ors  :\t" << counter_core_or << std::endl;
+    std::cout << "Number of ands  :\t" << counter_core_and << std::endl;
+    std::cout << "Number of nots  :\t" << counter_core_not << std::endl;
+    std::cout << "Number of implications :" << counter_core_imply << std::endl;
+    std::cout << "Number of true  :\t" << counter_core_true << std::endl;
+    std::cout << "Number of false  :\t" << counter_core_false << "\n"<< std::endl;
+
+    std::cout << "Number of BV-less or greater than  :\t" << counter_bitvector_LE_GR << std::endl;
+    std::cout << "Number of BV-less/equal or greater/equal than  :\t" << counter_bitvector_LEQ_GEQ << std::endl;
+    
+
+    
     return 0;
 }
+
+//did a print of names of variables. also affects the ones in the let-bindings, line 157
+
+//Changes made that counts core stats -> here it works but it is not the right place. here, every node is checked and it affects the preformance even on a small *.smt2-file, line 264
