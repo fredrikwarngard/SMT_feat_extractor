@@ -48,6 +48,8 @@ extern int counter_core_imply;
 extern int counter_core_and;
 extern int counter_core_or;
 extern int counter_core_xor;
+extern int counter_core_distinct;
+
 
 extern int counter_bitvec_true;
 extern int counter_bitvec_false;
@@ -88,6 +90,7 @@ void del_node(node *n);
 void set_seed(int n);
 void shuffle_list(std::vector<node *> *v);
 bool is_commutative(node *n);
+void is_commutative2(node *n);
 bool flip_antisymm(node *n, node **out_n);
 
 } // namespace scrambler

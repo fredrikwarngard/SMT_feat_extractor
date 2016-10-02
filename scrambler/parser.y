@@ -467,7 +467,8 @@ plain_term :  //counters here<??
   {
       node *n = $2;
       if (is_commutative($2)) {
-          shuffle_list($3);
+	is_commutative2($2);  //will not count non-commutatives
+	shuffle_list($3);
       } else if (flip_antisymm($2, &n)) {
           std::swap((*($3))[0], (*($3))[1]);
       }

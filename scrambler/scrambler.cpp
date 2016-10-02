@@ -61,6 +61,7 @@ int counter_core_imply   = 0;
 int counter_core_and     = 0;
 int counter_core_or      = 0;
 int counter_core_xor     = 0;
+int counter_core_distinct = 0;
 
 
 
@@ -310,7 +311,7 @@ node *make_node(const char *s, node *n1, node *n2)
     if (!ret->symbol.empty() && ret->children.empty()) {
         ret->needs_parens = false;
     }
-    if (ret->symbol.compare("xor") == 0)
+    /*    if (ret->symbol.compare("xor") == 0)
       ++counter_core_xor;
     if (ret->symbol.compare("and") == 0)
       ++counter_core_and;
@@ -323,8 +324,7 @@ node *make_node(const char *s, node *n1, node *n2)
     if (ret->symbol.compare("false") == 0)
       ++counter_core_false;
     if (ret->symbol.compare("imply") == 0)
-      ++counter_core_imply;
-
+    ++counter_core_imply; */
 
     return ret;
 }
@@ -389,7 +389,97 @@ void shuffle_list(std::vector<node *> *v)
 }
 
 
-bool is_commutative(node *n)
+
+
+  
+
+  void is_commutative2(node *n) //counter for commutative symbols
+{
+    std::string *curs = &(n->symbol);
+    if (curs->empty() && !n->children.empty()) {
+        curs = &(n->children[0]->symbol);
+    }
+    std::string &s = *curs;
+    if (s == "and") {
+      ++counter_core_and;
+      //      return true;
+    }
+    if (s == "or") {
+      ++counter_core_or;
+      //      return true;
+    }
+    if (s == "xor") {
+      ++counter_core_xor;
+      //      return true;
+    }
+    if (s == "distinct") {
+      ++counter_core_distinct;
+      //      return true;
+    }
+    if (s == "true") {
+      ++counter_core_true;
+      //      return false;
+    }
+    if (s == "false") {
+      ++counter_core_false;
+      //      return false;
+    }
+    if (s == "not") {
+      ++counter_core_not;
+      //      return false;
+    }
+    if (s == "=>") {
+      ++counter_core_imply;
+      //      return false;
+    }
+
+    if (!logic_is_dl()) {
+        if (s == "*") {
+	  //	  return true;
+        }
+        if (s == "+") {
+	  //	  return true;
+        }
+        if (s == "=") {
+	  //	  return true;
+        }
+        if (s == "bvand") {
+	  //	  return true;
+        }
+	if (s == "bvor") {
+	  //	  return true;
+        }
+	if (s == "bvxor") {
+	  //	  return true;
+        }
+	if (s == "bvnand") {
+	  //	  return true;
+        }
+	if (s == "bvnor") {
+	  //	  return true;
+        }
+	if (s == "bvcomp") {
+	  //	  return true;
+        }
+	if (s == "bvadd") {
+	  //	  return true;
+        }
+	if (s == "bvmul") {
+	  //	  return true;
+        }
+    }
+    //    return false;
+}
+  
+
+
+
+
+
+
+
+
+  bool is_commutative(node *n)
 {
     std::string *curs = &(n->symbol);
     if (curs->empty() && !n->children.empty()) {
@@ -1051,7 +1141,7 @@ int main(int argc, char **argv)
     std::cout << "Number of false  :\t" << counter_core_false << "\n"<< std::endl;
 
     std::cout << "Number of BV-less or greater than  :\t" << counter_bitvector_LE_GR << std::endl;
-    std::cout << "Number of BV-less/equal or greater/equal than  :\t" << counter_bitvector_LEQ_GEQ << std::endl;
+    std::cout << "Number of BV-less/equal or greater/equal than  : " << counter_bitvector_LEQ_GEQ << "\n" << std::endl;
     
 
     
