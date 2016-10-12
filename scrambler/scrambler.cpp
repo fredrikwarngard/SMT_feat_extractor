@@ -42,6 +42,7 @@
 #include <stack>
 
 
+int counter_variable_occurances = 0;
 int counter_declare_fun  = 0;
 int counter_declare_sort = 0;
 int counter_check_sat    = 0;
@@ -54,21 +55,34 @@ int counter_forall       = 0;
 int counter_exists       = 0;
 
 //CORE OPERATION SYMBOL COUNTER
-int counter_core_true    = 0;
-int counter_core_false   = 0;
-int counter_core_not     = 0;
-int counter_core_imply   = 0;
-int counter_core_and     = 0;
-int counter_core_or      = 0;
-int counter_core_xor     = 0;
+int counter_core_true     = 0;
+int counter_core_false    = 0;
+int counter_core_not      = 0;
+int counter_core_imply    = 0;
+int counter_core_and      = 0;
+int counter_core_or       = 0;
+int counter_core_xor      = 0;
 int counter_core_distinct = 0;
 
+//ARITHMETIC SYMBOL COUNTERS
+int counter_mult   = 0;
+int counter_plus   = 0;
+int counter_equals = 0;
+
+//BITVECTOR OPERATION COUNTERS
+int bv_counter_bvand  = 0;
+int bv_counter_bvor   = 0;
+int bv_counter_bvxor  = 0;
+int bv_counter_bvnand = 0;
+int bv_counter_bvnor  = 0;
+int bv_counter_bvcomp = 0;
+int bv_counter_bvadd  = 0;
+int bv_counter_bvmul  = 0;
 
 
 
-
-int counter_bitvector_LE_GR   = 0;
-int counter_bitvector_LEQ_GEQ = 0;
+int counter_bitvector_le_or_gr   = 0;
+int counter_bitvector_leq_or_grq = 0;
 
 /*
 int counter_bitvector_     = 0;
@@ -311,20 +325,6 @@ node *make_node(const char *s, node *n1, node *n2)
     if (!ret->symbol.empty() && ret->children.empty()) {
         ret->needs_parens = false;
     }
-    /*    if (ret->symbol.compare("xor") == 0)
-      ++counter_core_xor;
-    if (ret->symbol.compare("and") == 0)
-      ++counter_core_and;
-    if (ret->symbol.compare("or") == 0)
-      ++counter_core_or;
-    if (ret->symbol.compare("not") == 0)
-      ++counter_core_not;
-    if (ret->symbol.compare("true") == 0)
-      ++counter_core_true;
-    if (ret->symbol.compare("false") == 0)
-      ++counter_core_false;
-    if (ret->symbol.compare("imply") == 0)
-    ++counter_core_imply; */
 
     return ret;
 }
@@ -351,6 +351,7 @@ node *make_node(std::vector<node *> *v)
     ret->needs_parens = true;
     ret->symbol = "";
     ret->children.assign(v->begin(), v->end());
+    ++counter_variable_occurances;
     return ret;
 }
 
@@ -362,6 +363,7 @@ node *make_node(node *n, std::vector<node *> *v)
     ret->symbol = "";
     ret->children.push_back(n);
     ret->children.insert(ret->children.end(), v->begin(), v->end());
+    ++counter_variable_occurances;
     return ret;
 }
 
@@ -433,38 +435,51 @@ void shuffle_list(std::vector<node *> *v)
       //      return false;
     }
 
+
+    
     if (!logic_is_dl()) {
         if (s == "*") {
+	  ++counter_mult;
 	  //	  return true;
         }
         if (s == "+") {
+	  ++counter_plus;
 	  //	  return true;
         }
         if (s == "=") {
+	  ++counter_equals;
 	  //	  return true;
         }
         if (s == "bvand") {
+	  ++bv_counter_bvand;
 	  //	  return true;
         }
 	if (s == "bvor") {
+	  ++bv_counter_bvor;
 	  //	  return true;
         }
 	if (s == "bvxor") {
+	  ++bv_counter_bvxor;
 	  //	  return true;
         }
 	if (s == "bvnand") {
+	  ++bv_counter_bvnand;
 	  //	  return true;
         }
 	if (s == "bvnor") {
+	  ++bv_counter_bvnor;	  
 	  //	  return true;
         }
 	if (s == "bvcomp") {
+	  ++bv_counter_bvcomp;
 	  //	  return true;
         }
 	if (s == "bvadd") {
+	  ++bv_counter_bvadd;	  
 	  //	  return true;
         }
 	if (s == "bvmul") {
+	  ++bv_counter_bvmul;
 	  //	  return true;
         }
     }
@@ -519,42 +534,46 @@ bool flip_antisymm(node *n, node **out_n)
     }
     std::string &s = *curs;
     if (!logic_is_dl()) {
-        if (s == "<") {
-            *out_n = make_node(">");
-	    ++counter_bitvector_LE_GR;
-            return true;
-        } else if (s == ">") {
-            *out_n = make_node("<");
-	    ++counter_bitvector_LE_GR;
-            return true;
-        } else if (s == "<=") {
-            *out_n = make_node(">=");
-	    ++counter_bitvector_LEQ_GEQ;
-            return true;
-        } else if (s == ">=") {
+      if ((s == "<") | (s == ">")) {
+	if(s == "<") {
+	  *out_n = make_node(">");
+	} else {
+	  *out_n = make_node("<");
+	}
+	++counter_bitvector_le_or_gr;
+	return true;
+      } else if ((s == "<=") | (s == ">=")) {
+	if(s == "<=") {
+	  *out_n = make_node(">=");
+	} else {
+	  *out_n = make_node("<=");
+	}
+	++counter_bitvector_leq_or_grq;
+	return true;
+      } else if (s == ">=") {
             *out_n = make_node("<=");
-	    ++counter_bitvector_LEQ_GEQ;
+	    ++counter_bitvector_leq_or_grq;
             return true;
-        } else if (s == "bvslt") {
-            *out_n = make_node("bvsgt");
-            return true;
-        } else if (s == "bvsle") {
-            *out_n = make_node("bvsge");
-            return true;
-        } else if (s == "bvult") {
-            *out_n = make_node("bvugt");
-            return true;
-        } else if (s == "bvule") {
-            *out_n = make_node("bvuge");
+      } else if ((s == "bvslt") | (s == "bvsgt")) {
+	*out_n = make_node("bvsgt");
             return true;
         } else if (s == "bvsgt") {
             *out_n = make_node("bvslt");
             return true;
+      } else if ((s == "bvsle") | (s == "bvsge")) {
+            *out_n = make_node("bvsge");
+            return true;
         } else if (s == "bvsge") {
             *out_n = make_node("bvsle");
             return true;
+      } else if ((s == "bvult") | (s == "bvugt")) {
+            *out_n = make_node("bvugt");
+            return true;
         } else if (s == "bvugt") {
             *out_n = make_node("bvult");
+            return true;
+      } else if ((s == "bvule") | (s == "bvuge")) {
+            *out_n = make_node("bvuge");
             return true;
         } else if (s == "bvuge") {
             *out_n = make_node("bvule");
@@ -1122,6 +1141,7 @@ int main(int argc, char **argv)
                        unfold_start, unfold_end);
     }
     std::cout << "\nNumber of declare-fun :\t" << counter_declare_fun << std::endl;
+    std::cout << "\nNumber of variable occurances :\t" << counter_variable_occurances << std::endl;
     std::cout << "Number of declare-sort :" << counter_declare_sort << std::endl;
     std::cout << "Number of assertions :\t" << counter_assertions << std::endl;
     std::cout << "Number of check-sat  :\t" << counter_check_sat << "\n" << std::endl;
@@ -1140,8 +1160,8 @@ int main(int argc, char **argv)
     std::cout << "Number of true  :\t" << counter_core_true << std::endl;
     std::cout << "Number of false  :\t" << counter_core_false << "\n"<< std::endl;
 
-    std::cout << "Number of BV-less or greater than  :\t" << counter_bitvector_LE_GR << std::endl;
-    std::cout << "Number of BV-less/equal or greater/equal than  : " << counter_bitvector_LEQ_GEQ << "\n" << std::endl;
+    std::cout << "Number of < or >  :\t" << counter_bitvector_le_or_gr << std::endl;
+    std::cout << "Number of <= or >=  :\t" << counter_bitvector_leq_or_grq << "\n" << std::endl;
     
 
     
