@@ -40,6 +40,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <stack>
+#include <new>
 
 
 int counter_variable_occurances = 0;
@@ -79,59 +80,25 @@ int bv_counter_bvcomp = 0;
 int bv_counter_bvadd  = 0;
 int bv_counter_bvmul  = 0;
 
-
-
+//BITVECTOR INEQUALITY OPERATION COUNTERS
 int counter_bitvector_le_or_gr   = 0;
 int counter_bitvector_leq_or_grq = 0;
+int counter_bitvector_bvs_l_g    = 0;
+int counter_bitvector_bvs_le_ge  = 0;
+int counter_bitvector_bvu_l_g    = 0;
+int counter_bitvector_bvu_le_ge  = 0;
 
-/*
-int counter_bitvector_     = 0;
-int counter_bitvector_     = 0;
-int counter_bitvector_     = 0;
-int counter_bitvector_     = 0;
-int counter_bitvector_     = 0;
+int *defined_func;
 
-
-
-
-
-//BITVECTOR OPERATION COUNTERS
-        if (s == "<") {
-	  ++counter_bitvector_LE_GR;
-        } else if (s == ">") {
-	  ++counter_bitvector_LE_GR;
-        } else if (s == "<=") {
-	  ++counter_bitvector_LEQ_GEQ;
-        } else if (s == ">=") {
-	  ++counter_bitvector_LEQ_GEQ;
-
-
-        } else if (s == "bvslt") {
-            *out_n = make_node("bvsgt");
-        } else if (s == "bvsle") {
-            *out_n = make_node("bvsge");
-        } else if (s == "bvult") {
-            *out_n = make_node("bvugt");
-        } else if (s == "bvule") {
-            *out_n = make_node("bvuge");
-        } else if (s == "bvsgt") {
-            *out_n = make_node("bvslt");
-        } else if (s == "bvsge") {
-            *out_n = make_node("bvsle");
-        } else if (s == "bvugt") {
-            *out_n = make_node("bvult");
-        } else if (s == "bvuge") {
-            *out_n = make_node("bvule");
-            return true;
-        }
-
-*/
 
 
 namespace scrambler {
 
 namespace {
 
+defined_func
+
+  
 bool no_scramble = false;
 bool scramble_named_annot = false;
 bool lift_named_annot = false;
@@ -315,6 +282,7 @@ node *make_node(const char *s, node *n1, node *n2)
     ret->needs_parens = true;
     if (s) {
         ret->symbol = get_name(s);
+	++counter_variable_occurances; //must be check to be  matched with already defined variables
     }
     if (n1) {
         ret->children.push_back(n1);
@@ -325,7 +293,6 @@ node *make_node(const char *s, node *n1, node *n2)
     if (!ret->symbol.empty() && ret->children.empty()) {
         ret->needs_parens = false;
     }
-
     return ret;
 }
 
@@ -542,6 +509,7 @@ bool flip_antisymm(node *n, node **out_n)
 	}
 	++counter_bitvector_le_or_gr;
 	return true;
+	
       } else if ((s == "<=") | (s == ">=")) {
 	if(s == "<=") {
 	  *out_n = make_node(">=");
@@ -550,40 +518,47 @@ bool flip_antisymm(node *n, node **out_n)
 	}
 	++counter_bitvector_leq_or_grq;
 	return true;
-      } else if (s == ">=") {
-            *out_n = make_node("<=");
-	    ++counter_bitvector_leq_or_grq;
-            return true;
+	
       } else if ((s == "bvslt") | (s == "bvsgt")) {
-	*out_n = make_node("bvsgt");
-            return true;
-        } else if (s == "bvsgt") {
-            *out_n = make_node("bvslt");
-            return true;
+	if (s == "bvslt") {
+	  *out_n = make_node("bvsgt");
+	} else {
+	  *out_n = make_node("bvslt");
+	}
+	++counter_bitvector_bvs_l_g;
+	return true;
+	
       } else if ((s == "bvsle") | (s == "bvsge")) {
-            *out_n = make_node("bvsge");
-            return true;
-        } else if (s == "bvsge") {
-            *out_n = make_node("bvsle");
-            return true;
+	if (s == "bvsle") {
+	  *out_n = make_node("bvsge");
+	} else {
+	  *out_n = make_node("bvsle");	  
+	}
+	++counter_bitvector_bvs_le_ge;
+	return true;
+	
       } else if ((s == "bvult") | (s == "bvugt")) {
-            *out_n = make_node("bvugt");
-            return true;
-        } else if (s == "bvugt") {
-            *out_n = make_node("bvult");
-            return true;
+	if (s == "bvult") {
+	  *out_n = make_node("bvugt");
+	} else {
+	  *out_n = make_node("bvult");
+	}
+	++counter_bitvector_bvu_l_g;
+	return true;
+	
       } else if ((s == "bvule") | (s == "bvuge")) {
-            *out_n = make_node("bvuge");
-            return true;
-        } else if (s == "bvuge") {
-            *out_n = make_node("bvule");
-            return true;
-        }
+	if (s == "bvule") {
+	  *out_n = make_node("bvuge");
+	} else {
+	  *out_n = make_node("bvule");
+	}
+	++counter_bitvector_bvu_le_ge;
+	return true;
+      }
+      return false;
     }
-    return false;
 }
-
-
+    
 namespace {
 
 std::string make_annot_name(int n)
@@ -1140,8 +1115,8 @@ int main(int argc, char **argv)
         print_unfolded(unfold_pattern, keep_annotations,
                        unfold_start, unfold_end);
     }
-    std::cout << "\nNumber of declare-fun :\t" << counter_declare_fun << std::endl;
-    std::cout << "\nNumber of variable occurances :\t" << counter_variable_occurances << std::endl;
+    std::cout << "\n" << "Number of declare-fun :\t" << counter_declare_fun << std::endl;
+    std::cout << "\n" << "Number of variable occurances :\t" << counter_variable_occurances << std::endl;
     std::cout << "Number of declare-sort :" << counter_declare_sort << std::endl;
     std::cout << "Number of assertions :\t" << counter_assertions << std::endl;
     std::cout << "Number of check-sat  :\t" << counter_check_sat << "\n" << std::endl;

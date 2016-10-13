@@ -63,22 +63,14 @@ extern int bv_counter_bvcomp;
 extern int bv_counter_bvadd;
 extern int bv_counter_bvmul;
 
+extern int counter_bitvector_le_or_gr;
+extern int counter_bitvector_leq_or_grq;
+extern int counter_bitvector_bvs_l_g;
+extern int counter_bitvector_bvs_le_ge;
+extern int counter_bitvector_bvu_l_g;
+extern int counter_bitvector_bvu_le_ge;
 
-
-
-
-
-
-/*
-extern int counter_bitvec_true;
-extern int counter_bitvec_false;
-extern int counter_bitvec_not;
-extern int counter_bitvec_imply;
-extern int counter_bitvec_and;
-extern int counter_bitvec_or;
-extern int counter_bitvec_xor;
-*/
-
+//extern char *defined_func;
 
 namespace scrambler {
 
