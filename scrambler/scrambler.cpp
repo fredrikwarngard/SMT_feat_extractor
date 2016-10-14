@@ -42,7 +42,7 @@
 #include <stack>
 #include <new>
 
-
+int counter_total_elements = 0;
 int counter_variable_occurances = 0;
 int counter_declare_fun  = 0;
 int counter_declare_sort = 0;
@@ -88,15 +88,13 @@ int counter_bitvector_bvs_le_ge  = 0;
 int counter_bitvector_bvu_l_g    = 0;
 int counter_bitvector_bvu_le_ge  = 0;
 
-int *defined_func;
+//char *defined_func[20];
 
 
 
 namespace scrambler {
 
 namespace {
-
-defined_func
 
   
 bool no_scramble = false;
@@ -1098,7 +1096,7 @@ int main(int argc, char **argv)
                 if (create_core) {
                     filter_named(names);
                 }
-                print_scrambled(std::cout, keep_annotations);
+		//                print_scrambled(std::cout, keep_annotations);
             }
         }
     }
@@ -1109,13 +1107,13 @@ int main(int argc, char **argv)
 
     if (!unfold) {
         if (!commands.empty()) {
-            print_scrambled(std::cout, keep_annotations);
+	  //            print_scrambled(std::cout, keep_annotations);
         }
     } else {
         print_unfolded(unfold_pattern, keep_annotations,
                        unfold_start, unfold_end);
     }
-    std::cout << "\n" << "Number of declare-fun :\t" << counter_declare_fun << std::endl;
+    /*    std::cout << "\n" << "Number of declare-fun :\t" << counter_declare_fun << std::endl;
     std::cout << "\n" << "Number of variable occurances :\t" << counter_variable_occurances << std::endl;
     std::cout << "Number of declare-sort :" << counter_declare_sort << std::endl;
     std::cout << "Number of assertions :\t" << counter_assertions << std::endl;
@@ -1137,8 +1135,46 @@ int main(int argc, char **argv)
 
     std::cout << "Number of < or >  :\t" << counter_bitvector_le_or_gr << std::endl;
     std::cout << "Number of <= or >=  :\t" << counter_bitvector_leq_or_grq << "\n" << std::endl;
-    
+    */
 
+    std::cout <<
+      //      counter_total_elements << "\t" <<
+      //      counter_variable_occurances << "\t" <<
+      counter_declare_fun << "\t" <<
+      counter_declare_sort << "\t" <<
+      counter_check_sat << "\t" <<
+      counter_assertions << "\t" <<
+      counter_argument << "\t" <<
+      counter_push << "\t" <<
+      counter_pop << "\t" <<
+      counter_let_bindings << "\t" <<
+      counter_forall << "\t" <<
+      counter_exists << "\t" <<
+      counter_core_true << "\t" <<
+      counter_core_false << "\t" <<
+      counter_core_not << "\t" <<
+      counter_core_imply << "\t" <<
+      counter_core_and << "\t" <<
+      counter_core_or << "\t" <<
+      counter_core_xor << "\t" <<
+      counter_core_distinct << "\t" <<
+      counter_mult << "\t" <<
+      counter_plus << "\t" <<
+      counter_equals << "\t" <<
+      bv_counter_bvand << "\t" <<
+      bv_counter_bvor << "\t" <<
+      bv_counter_bvxor << "\t" <<
+      bv_counter_bvnand << "\t" <<
+      bv_counter_bvnor << "\t" <<
+      bv_counter_bvcomp << "\t" <<
+      bv_counter_bvadd << "\t" <<
+      bv_counter_bvmul << "\t" <<
+      counter_bitvector_le_or_gr << "\t" <<
+      counter_bitvector_leq_or_grq << "\t" <<
+      counter_bitvector_bvs_l_g << "\t" <<
+      counter_bitvector_bvs_le_ge << "\t" <<
+      counter_bitvector_bvu_l_g << "\t" <<
+      counter_bitvector_bvu_le_ge << std::endl;  
     
     return 0;
 }

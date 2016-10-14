@@ -30,6 +30,7 @@
 #include <vector>
 #include <string>
 
+extern int counter_total_elements;
 extern int counter_variable_occurances;
 extern int counter_declare_fun;
 extern int counter_declare_sort;

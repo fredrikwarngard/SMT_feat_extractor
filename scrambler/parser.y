@@ -218,6 +218,7 @@ cmd_declare_fun :
       add_node("declare-fun", make_node($3), make_node(), $6);
       free($3);
       ++counter_declare_fun;
+      counter_total_elements + 7;
   }
 | '(' TK_DECLARE_FUN SYMBOL '(' sort_list ')' a_sort ')'
   {
@@ -225,6 +226,7 @@ cmd_declare_fun :
       add_node("declare-fun", make_node($3), make_node($5), $7);
       free($3);
       ++counter_declare_fun;
+      counter_total_elements + 8;
   }
 ;
 
@@ -260,6 +262,7 @@ cmd_push : '(' TK_PUSH NUMERAL ')'
       }
       add_node("push", make_node($3));
       ++counter_push;
+      counter_total_elements + 4;
       free($3);
   }
 ;
@@ -274,6 +277,7 @@ cmd_pop : '(' TK_POP NUMERAL ')'
       add_node("pop", make_node($3));
       ++counter_pop;
       free($3);
+      counter_total_elements + 4;
   }
 ;
 
@@ -283,6 +287,7 @@ cmd_assert :
   {
       add_node("assert", $3);
       ++counter_assertions;
+      counter_total_elements + 3;
   }
 ;
 
@@ -291,6 +296,7 @@ cmd_check_sat : '(' TK_CHECK_SAT ')'
   {
       add_node("check-sat");
       ++ counter_check_sat;
+      counter_total_elements + 3;
   }
 ;
 
@@ -409,7 +415,7 @@ a_term :
   {
       $$ = $1;
   }
-| plain_term
+| plain_term 
   {
       $$ = $1;
   }
