@@ -1,5 +1,5 @@
 #!/bin/bash
-#A script for running scrambler
+#A script for running scrambler on all .smt2 files in the folder
 
 for i in *.smt2
 do
