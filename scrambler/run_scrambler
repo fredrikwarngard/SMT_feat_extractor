@@ -1,0 +1,7 @@
+#!/bin/bash
+#A script for running scrambler
+
+for i in *.smt2
+do
+	./scrambler < $i
+done
