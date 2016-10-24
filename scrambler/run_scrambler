@@ -1,7 +1,8 @@
 #!/bin/bash
 #A script for running scrambler on all .smt2 files in the folder
 
+#for i in $(find . -name "*.smt2")
 for i in *.smt2
 do
-	./scrambler < $i
+    (echo $i && (./scrambler < $i)) >> result.txt
 done

@@ -31,7 +31,7 @@
 #include <string>
 
 extern int counter_total_elements;
-extern int counter_variable_occurances;
+extern int counter_of_symbols;
 extern int counter_declare_fun;
 extern int counter_declare_sort;
 extern int counter_assertions;
@@ -55,6 +55,8 @@ extern int counter_core_distinct;
 extern int counter_mult;
 extern int counter_plus;
 extern int counter_equals;
+extern int counter_int_le_or_gr;
+extern int counter_int_leq_or_grq;
 extern int bv_counter_bvand;
 extern int bv_counter_bvor;
 extern int bv_counter_bvxor;
@@ -64,8 +66,6 @@ extern int bv_counter_bvcomp;
 extern int bv_counter_bvadd;
 extern int bv_counter_bvmul;
 
-extern int counter_bitvector_le_or_gr;
-extern int counter_bitvector_leq_or_grq;
 extern int counter_bitvector_bvs_l_g;
 extern int counter_bitvector_bvs_le_ge;
 extern int counter_bitvector_bvu_l_g;
@@ -102,7 +102,7 @@ void del_node(node *n);
 void set_seed(int n);
 void shuffle_list(std::vector<node *> *v);
 bool is_commutative(node *n);
-void is_commutative2(node *n);
+bool is_commutative2(node *n);
 bool flip_antisymm(node *n, node **out_n);
 
 } // namespace scrambler

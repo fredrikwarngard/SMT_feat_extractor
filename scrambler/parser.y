@@ -440,6 +440,8 @@ plain_term :  //counters here<??
       delete $4;
       pop_namespace();
       ++counter_let_bindings;
+      counter_total_elements + 7;
+
   }
 | '(' TK_FORALL '(' quant_var_list ')' a_term ')'
   {
@@ -449,6 +451,7 @@ plain_term :  //counters here<??
           pop_namespace();
       }
       ++counter_forall;
+      counter_total_elements + 7;
       delete $4;
   }
 | '(' TK_EXISTS '(' quant_var_list ')' a_term ')'
@@ -459,22 +462,26 @@ plain_term :  //counters here<??
           pop_namespace();
       }
       ++counter_exists;
+      counter_total_elements + 7;
       delete $4;
   }
 | term_num_constant
   {
       $$ = $1;
+      ++counter_total_elements;
   }
 | term_symbol
   {
       $$ = $1;
+      ++counter_of_symbols;
+      ++counter_total_elements;
   }
 | '(' term_symbol term_list ')'
   {
       node *n = $2;
-      if (is_commutative($2)) {
-	is_commutative2($2);  //will not count non-commutatives/ only used if we use the void functn
-	shuffle_list($3);
+      if (is_commutative2($2)) {
+	//	is_commutative2($2);  //will not count non-commutatives/ only used if we use the void functn
+	//	shuffle_list($3);
       } else if (flip_antisymm($2, &n)) {
           std::swap((*($3))[0], (*($3))[1]);
       }

@@ -43,7 +43,7 @@
 #include <new>
 
 int counter_total_elements = 0;
-int counter_variable_occurances = 0;
+int counter_of_symbols   = 0;
 int counter_declare_fun  = 0;
 int counter_declare_sort = 0;
 int counter_check_sat    = 0;
@@ -66,9 +66,11 @@ int counter_core_xor      = 0;
 int counter_core_distinct = 0;
 
 //ARITHMETIC SYMBOL COUNTERS
-int counter_mult   = 0;
-int counter_plus   = 0;
-int counter_equals = 0;
+int counter_mult           = 0;
+int counter_plus           = 0;
+int counter_equals         = 0;
+int counter_int_le_or_gr   = 0;
+int counter_int_leq_or_grq = 0;
 
 //BITVECTOR OPERATION COUNTERS
 int bv_counter_bvand  = 0;
@@ -81,8 +83,6 @@ int bv_counter_bvadd  = 0;
 int bv_counter_bvmul  = 0;
 
 //BITVECTOR INEQUALITY OPERATION COUNTERS
-int counter_bitvector_le_or_gr   = 0;
-int counter_bitvector_leq_or_grq = 0;
 int counter_bitvector_bvs_l_g    = 0;
 int counter_bitvector_bvs_le_ge  = 0;
 int counter_bitvector_bvu_l_g    = 0;
@@ -280,7 +280,7 @@ node *make_node(const char *s, node *n1, node *n2)
     ret->needs_parens = true;
     if (s) {
         ret->symbol = get_name(s);
-	++counter_variable_occurances; //must be check to be  matched with already defined variables
+	//	++counter_of_symbols; //must be check to be  matched with already defined variables
     }
     if (n1) {
         ret->children.push_back(n1);
@@ -316,7 +316,7 @@ node *make_node(std::vector<node *> *v)
     ret->needs_parens = true;
     ret->symbol = "";
     ret->children.assign(v->begin(), v->end());
-    ++counter_variable_occurances;
+    //    ++counter_of_symbols;
     return ret;
 }
 
@@ -328,7 +328,7 @@ node *make_node(node *n, std::vector<node *> *v)
     ret->symbol = "";
     ret->children.push_back(n);
     ret->children.insert(ret->children.end(), v->begin(), v->end());
-    ++counter_variable_occurances;
+    //    ++counter_of_symbols;
     return ret;
 }
 
@@ -360,7 +360,7 @@ void shuffle_list(std::vector<node *> *v)
 
   
 
-  void is_commutative2(node *n) //counter for commutative symbols
+  bool is_commutative2(node *n) //counter for commutative symbols
 {
     std::string *curs = &(n->symbol);
     if (curs->empty() && !n->children.empty()) {
@@ -369,35 +369,35 @@ void shuffle_list(std::vector<node *> *v)
     std::string &s = *curs;
     if (s == "and") {
       ++counter_core_and;
-      //      return true;
+      return true;
     }
     if (s == "or") {
       ++counter_core_or;
-      //      return true;
+      return true;
     }
     if (s == "xor") {
       ++counter_core_xor;
-      //      return true;
+      return true;
     }
     if (s == "distinct") {
       ++counter_core_distinct;
-      //      return true;
+      return true;
     }
     if (s == "true") {
       ++counter_core_true;
-      //      return false;
+      return false;
     }
     if (s == "false") {
       ++counter_core_false;
-      //      return false;
+      return false;
     }
     if (s == "not") {
       ++counter_core_not;
-      //      return false;
+      return false;
     }
     if (s == "=>") {
       ++counter_core_imply;
-      //      return false;
+      return false;
     }
 
 
@@ -405,50 +405,50 @@ void shuffle_list(std::vector<node *> *v)
     if (!logic_is_dl()) {
         if (s == "*") {
 	  ++counter_mult;
-	  //	  return true;
+	  return true;
         }
         if (s == "+") {
 	  ++counter_plus;
-	  //	  return true;
+	  return true;
         }
         if (s == "=") {
 	  ++counter_equals;
-	  //	  return true;
+	  return true;
         }
         if (s == "bvand") {
 	  ++bv_counter_bvand;
-	  //	  return true;
+	  return true;
         }
 	if (s == "bvor") {
 	  ++bv_counter_bvor;
-	  //	  return true;
+	  return true;
         }
 	if (s == "bvxor") {
 	  ++bv_counter_bvxor;
-	  //	  return true;
+	  return true;
         }
 	if (s == "bvnand") {
 	  ++bv_counter_bvnand;
-	  //	  return true;
+	  return true;
         }
 	if (s == "bvnor") {
 	  ++bv_counter_bvnor;	  
-	  //	  return true;
+	  return true;
         }
 	if (s == "bvcomp") {
 	  ++bv_counter_bvcomp;
-	  //	  return true;
+	  return true;
         }
 	if (s == "bvadd") {
 	  ++bv_counter_bvadd;	  
-	  //	  return true;
+	  return true;
         }
 	if (s == "bvmul") {
 	  ++bv_counter_bvmul;
-	  //	  return true;
+	  return true;
         }
     }
-    //    return false;
+    return false;
 }
   
 
@@ -505,7 +505,7 @@ bool flip_antisymm(node *n, node **out_n)
 	} else {
 	  *out_n = make_node("<");
 	}
-	++counter_bitvector_le_or_gr;
+	++counter_int_le_or_gr;
 	return true;
 	
       } else if ((s == "<=") | (s == ">=")) {
@@ -514,7 +514,7 @@ bool flip_antisymm(node *n, node **out_n)
 	} else {
 	  *out_n = make_node("<=");
 	}
-	++counter_bitvector_leq_or_grq;
+	++counter_int_leq_or_grq;
 	return true;
 	
       } else if ((s == "bvslt") | (s == "bvsgt")) {
@@ -1138,42 +1138,42 @@ int main(int argc, char **argv)
     */
 
     std::cout <<
-      //      counter_total_elements << "\t" <<
-      //      counter_variable_occurances << "\t" <<
-      counter_declare_fun << "\t" <<
-      counter_declare_sort << "\t" <<
-      counter_check_sat << "\t" <<
-      counter_assertions << "\t" <<
-      counter_argument << "\t" <<
-      counter_push << "\t" <<
-      counter_pop << "\t" <<
-      counter_let_bindings << "\t" <<
-      counter_forall << "\t" <<
-      counter_exists << "\t" <<
-      counter_core_true << "\t" <<
-      counter_core_false << "\t" <<
-      counter_core_not << "\t" <<
-      counter_core_imply << "\t" <<
-      counter_core_and << "\t" <<
-      counter_core_or << "\t" <<
-      counter_core_xor << "\t" <<
-      counter_core_distinct << "\t" <<
-      counter_mult << "\t" <<
-      counter_plus << "\t" <<
-      counter_equals << "\t" <<
-      bv_counter_bvand << "\t" <<
-      bv_counter_bvor << "\t" <<
-      bv_counter_bvxor << "\t" <<
-      bv_counter_bvnand << "\t" <<
-      bv_counter_bvnor << "\t" <<
-      bv_counter_bvcomp << "\t" <<
-      bv_counter_bvadd << "\t" <<
-      bv_counter_bvmul << "\t" <<
-      counter_bitvector_le_or_gr << "\t" <<
-      counter_bitvector_leq_or_grq << "\t" <<
-      counter_bitvector_bvs_l_g << "\t" <<
-      counter_bitvector_bvs_le_ge << "\t" <<
-      counter_bitvector_bvu_l_g << "\t" <<
+      //      counter_total_elements << ", " <<
+      counter_of_symbols << ", " <<
+      counter_declare_fun << ", " <<
+      counter_declare_sort << ", " <<
+      counter_check_sat << ", " <<
+      counter_assertions << ", " <<
+      counter_argument << ", " <<
+      counter_push << ", " <<
+      counter_pop << ", " <<
+      counter_let_bindings << ", " <<
+      counter_forall << ", " <<
+      counter_exists << ", " <<
+      counter_core_true << ", " <<
+      counter_core_false << ", " <<
+      counter_core_not << ", " <<
+      counter_core_imply << ", " <<
+      counter_core_and << ", " <<
+      counter_core_or << ", " <<
+      counter_core_xor << ", " <<
+      counter_core_distinct << ", " <<
+      counter_mult << ", " <<
+      counter_plus << ", " <<
+      counter_equals << ", " <<
+      counter_int_le_or_gr << ", " <<
+      counter_int_leq_or_grq << ", " <<
+      bv_counter_bvand << ", " <<
+      bv_counter_bvor << ", " <<
+      bv_counter_bvxor << ", " <<
+      bv_counter_bvnand << ", " <<
+      bv_counter_bvnor << ", " <<
+      bv_counter_bvcomp << ", " <<
+      bv_counter_bvadd << ", " <<
+      bv_counter_bvmul << ", " <<
+      counter_bitvector_bvs_l_g << ", " <<
+      counter_bitvector_bvs_le_ge << ", " <<
+      counter_bitvector_bvu_l_g << ", " <<
       counter_bitvector_bvu_le_ge << std::endl;  
     
     return 0;
