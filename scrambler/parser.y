@@ -218,7 +218,7 @@ cmd_declare_fun :
       add_node("declare-fun", make_node($3), make_node(), $6);
       free($3);
       ++counter_declare_fun;
-      counter_total_elements + 7;
+      //counter_total_elements + 7;
   }
 | '(' TK_DECLARE_FUN SYMBOL '(' sort_list ')' a_sort ')'
   {
@@ -226,7 +226,7 @@ cmd_declare_fun :
       add_node("declare-fun", make_node($3), make_node($5), $7);
       free($3);
       ++counter_declare_fun;
-      counter_total_elements + 8;
+      //counter_total_elements + 8;
   }
 ;
 
@@ -262,7 +262,7 @@ cmd_push : '(' TK_PUSH NUMERAL ')'
       }
       add_node("push", make_node($3));
       ++counter_push;
-      counter_total_elements + 4;
+      //counter_total_elements + 4;
       free($3);
   }
 ;
@@ -277,7 +277,7 @@ cmd_pop : '(' TK_POP NUMERAL ')'
       add_node("pop", make_node($3));
       ++counter_pop;
       free($3);
-      counter_total_elements + 4;
+      //counter_total_elements + 4;
   }
 ;
 
@@ -287,7 +287,7 @@ cmd_assert :
   {
       add_node("assert", $3);
       ++counter_assertions;
-      counter_total_elements + 3;
+      //counter_total_elements + 3;
   }
 ;
 
@@ -296,7 +296,7 @@ cmd_check_sat : '(' TK_CHECK_SAT ')'
   {
       add_node("check-sat");
       ++ counter_check_sat;
-      counter_total_elements + 3;
+      //counter_total_elements + 3;
   }
 ;
 
@@ -440,7 +440,7 @@ plain_term :  //counters here<??
       delete $4;
       pop_namespace();
       ++counter_let_bindings;
-      counter_total_elements + 7;
+      //counter_total_elements + 7;
 
   }
 | '(' TK_FORALL '(' quant_var_list ')' a_term ')'
@@ -451,7 +451,7 @@ plain_term :  //counters here<??
           pop_namespace();
       }
       ++counter_forall;
-      counter_total_elements + 7;
+      //counter_total_elements + 7;
       delete $4;
   }
 | '(' TK_EXISTS '(' quant_var_list ')' a_term ')'
@@ -462,19 +462,19 @@ plain_term :  //counters here<??
           pop_namespace();
       }
       ++counter_exists;
-      counter_total_elements + 7;
+      //counter_total_elements + 7;
       delete $4;
   }
 | term_num_constant
   {
       $$ = $1;
-      ++counter_total_elements;
+      //++counter_total_elements;
   }
 | term_symbol
   {
       $$ = $1;
       ++counter_of_symbols;
-      ++counter_total_elements;
+      //++counter_total_elements;
   }
 | '(' term_symbol term_list ')'
   {
@@ -483,7 +483,7 @@ plain_term :  //counters here<??
 	//	is_commutative2($2);  //will not count non-commutatives/ only used if we use the void functn
 	//	shuffle_list($3);
       } else if (flip_antisymm($2, &n)) {
-          std::swap((*($3))[0], (*($3))[1]);
+	//          std::swap((*($3))[0], (*($3))[1]);
       }
       $$ = make_node(n, $3);
       if (n != $2) {

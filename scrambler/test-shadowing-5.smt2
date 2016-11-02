@@ -1,5 +1,0 @@
-(declare-fun x () Bool)
-(assert (let ((x x) (y x)) x))
-(assert x)
-(check-sat)
-(exit)

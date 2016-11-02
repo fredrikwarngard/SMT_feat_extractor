@@ -1,6 +1,0 @@
-(define-fun x ((y Int) (y Int)) Bool (= y y))
-(assert (x 0 0))
-(declare-fun y () Bool)
-(assert y)
-(check-sat)
-(exit)

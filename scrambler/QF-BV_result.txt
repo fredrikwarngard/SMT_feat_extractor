@@ -5,7 +5,7 @@ sys	1m23.012s
 
 
 
-total_elements, symbols, declare_fun, declare_sort, check_sat, assert, argument, push, pop, let_bindings, forall, exists, core_true, core_false, core_not, core_imply, core_and, core_or, core_xor, core_distinct, mult, plus, equals, int_le_or_gr, int_leq_or_grq, bvand, bvor, bvxor, bvnand, bvnor, bvcomp, bvadd, bvmul, bvs_l_g, bvs_le_ge, bvu_l_g, bvu_le_ge  
+total_elements, symbols, declare_fun, declare_sort, check_sat, assert, argument, push, pop, let_bindings, forall, exists, core_true, core_false, core_not, core_imply, core_and, core_or, core_xor, core_distinct, mult, plus, equals, int_le_or_gr, int_leq_or_grq, bvand, bvor, bvxor, bvnand, bvnor, bvcomp, bvadd, bvmul, bvs_l_g, bvs_le_ge, bvu_l_g, bvu_le_ge
 
 3, 3, 1, 0, 1, 2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 1291, 600, 68, 0, 1, 1, 0, 0, 0, 11, 0, 0, 0, 0, 20, 0, 1, 0, 0, 0, 0, 0, 61, 0, 0, 0, 24, 0, 0, 0, 0, 58, 1, 0, 12, 49, 118

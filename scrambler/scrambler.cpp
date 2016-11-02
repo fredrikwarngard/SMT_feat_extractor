@@ -399,8 +399,6 @@ void shuffle_list(std::vector<node *> *v)
       ++counter_core_imply;
       return false;
     }
-
-
     
     if (!logic_is_dl()) {
         if (s == "*") {
@@ -452,13 +450,6 @@ void shuffle_list(std::vector<node *> *v)
 }
   
 
-
-
-
-
-
-
-
   bool is_commutative(node *n)
 {
     std::string *curs = &(n->symbol);
@@ -500,56 +491,56 @@ bool flip_antisymm(node *n, node **out_n)
     std::string &s = *curs;
     if (!logic_is_dl()) {
       if ((s == "<") | (s == ">")) {
-	if(s == "<") {
+	/*	if(s == "<") {
 	  *out_n = make_node(">");
 	} else {
-	  *out_n = make_node("<");
-	}
+	*out_n = make_node("<");
+	}*/
 	++counter_int_le_or_gr;
 	return true;
 	
       } else if ((s == "<=") | (s == ">=")) {
-	if(s == "<=") {
+	/*if(s == "<=") {
 	  *out_n = make_node(">=");
 	} else {
 	  *out_n = make_node("<=");
-	}
+	  }*/
 	++counter_int_leq_or_grq;
 	return true;
 	
       } else if ((s == "bvslt") | (s == "bvsgt")) {
-	if (s == "bvslt") {
-	  *out_n = make_node("bvsgt");
+	/*if (s == "bvslt") {
+	   *out_n = make_node("bvsgt");
 	} else {
 	  *out_n = make_node("bvslt");
-	}
+	  }*/
 	++counter_bitvector_bvs_l_g;
 	return true;
 	
       } else if ((s == "bvsle") | (s == "bvsge")) {
-	if (s == "bvsle") {
-	  *out_n = make_node("bvsge");
+	  /*if (s == "bvsle") {
+	   *out_n = make_node("bvsge");
 	} else {
 	  *out_n = make_node("bvsle");	  
-	}
+	  }*/
 	++counter_bitvector_bvs_le_ge;
 	return true;
 	
       } else if ((s == "bvult") | (s == "bvugt")) {
-	if (s == "bvult") {
+	  /*if (s == "bvult") {
 	  *out_n = make_node("bvugt");
 	} else {
 	  *out_n = make_node("bvult");
-	}
+	  }*/
 	++counter_bitvector_bvu_l_g;
 	return true;
 	
       } else if ((s == "bvule") | (s == "bvuge")) {
-	if (s == "bvule") {
+	/*if (s == "bvule") {
 	  *out_n = make_node("bvuge");
 	} else {
 	  *out_n = make_node("bvule");
-	}
+	  }*/
 	++counter_bitvector_bvu_le_ge;
 	return true;
       }

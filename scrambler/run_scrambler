@@ -1,8 +1,48 @@
 #!/bin/bash
 #A script for running scrambler on all .smt2 files in the folder
 
-#for i in $(find . -name "*.smt2")
-for i in *.smt2
+(echo "filename, symbols, declare_fun, declare_sort, check_sat, assert, argument, push, pop, let_bindings, forall, exists, core_true, core_false, core_not, core_imply, core_and, core_or, core_xor, core_distinct, mult, plus, equals, int_le_or_gr, int_leq_or_grq, bvand, bvor, bvxor, bvnand, bvnor, bvcomp, bvadd, bvmul, bvs_l_g, bvs_le_ge, bvu_l_g, bvu_le_ge") >> result.txt
+
+for i in $(find . -name "*.smt2")
+#for i in *.smt2
 do
-    (echo $i && (./scrambler < $i)) >> result.txt
+    files=$(./scrambler < $i)
+    if [[ $files ]]; then
+	echo -n $i       >> result.txt
+	echo "," $files  >> result.txt
+#	./scrambler < $i >> result.txt
+    else
+	echo $i >> result.txt
+    fi
 done
+
+
+count=$(wc -l < result.txt)
+echo "inputs processed :" $count >> data.txt
+echo -n "potential inputs : " >> data.txt
+find . -name '*.smt2' | wc -l >> data.txt
+
+#cut -f2 file.txt | sort -u -c | wc -l
+#awk '
+
+#{print $2}' | grep ^[\.]
+#'
+
+
+
+
+#echo >> result.txt
+#echo "This is our number of inputs : " >> $count >> result.txt
+
+
+	
+#    echo -n $i       >> result.txt
+#    echo -n ", "     >> result.txt
+#    ./scrambler < $i >> result.txt
+#    echo $?
+#	    else echo " " >> result.txt
+#    fi
+#done
+
+
+
